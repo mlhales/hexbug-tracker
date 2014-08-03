@@ -1,7 +1,5 @@
 __author__ = 'mike'
 
-import cv2
-
 
 class Bounds():
     def __init__(self, x, y):
