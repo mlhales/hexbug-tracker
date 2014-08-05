@@ -59,8 +59,8 @@ class VideoTracker():
                     cv2.circle(frame, (cx, cy), 2, (255, 0, 0))
                     if bounds:
                         bounds.expand_box(box)
-                        w = self.distance_between(box[0], [1])
-                        l = self.distance_between(box[1], [2])
+                        w = self.distance_between(box[0], box[1])
+                        l = self.distance_between(box[1], box[2])
                         if w > l:
                             temp = w
                             w = l
@@ -82,7 +82,6 @@ class VideoTracker():
         return centroid, bounds, (length, width)
 
 
-    @staticmethod
     def distance_between(self, point1, point2):
         x1, y1 = point1
         x2, y2 = point2

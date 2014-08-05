@@ -22,9 +22,15 @@ class HexbugPredictor():
         if self.source:
             cap = cv2.VideoCapture(self.source)
 
+        # todo create a particle filter
+
         for pt in self.centroid:
             if cap:
                 frame = cap.read()
+
+            # todo update the particle filter
+
+            if frame:
                 cv2.imshow("Prediction", frame)
 
         if cap:
