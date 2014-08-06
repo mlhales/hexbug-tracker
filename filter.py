@@ -1,4 +1,4 @@
-__author__ = 'mike'
+__author__ = 'mlh'
 
 import numpy as np
 from bug import *
@@ -9,13 +9,14 @@ class ParticleFilter():
     ParticleFilter implements the particle filter algorithm
     """
 
-    def __init__(self, x, y, orientation, speed, length, width, count=1000):
+    def __init__(self, bounds, size, count=1000):
         self.count = count
         self.particles = []
         for i in range(count):
-            self.particles.append(Bug(x, y, orientation, speed, length, width))
+            # todo instantiate the bugs based on the bounds
+            self.particles.append(Bug(x, y, size))
 
-    def filter(self, x, y, orientation, speed):
+    def sense(self, x, y):
         probability = []
         for particle in self.particles:
             particle.predict()
@@ -30,5 +31,9 @@ class ParticleFilter():
             while beta > max_prob[index]:
                 beta -= max_prob[index]
                 index = (index + 1) % self.count
-            new_population.append(self.population[index])
+            new_population.append(self.population[index].copy())
         self.particles = new_population
+
+    def best(self):
+        # todo actually find the best particle.
+        return self.particles[0]

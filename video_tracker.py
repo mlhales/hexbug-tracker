@@ -1,4 +1,4 @@
-__author__ = 'mike'
+__author__ = 'mlh'
 
 import os
 import math
@@ -30,15 +30,18 @@ class VideoTracker():
 
         centroid = []
         bounds = None
-        length = None
-        width = None
+        length = []
+        width = []
         ctr = 0
 
         while True:
             try:
-                _, frame = cap.read()
-                hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-                ctr += 1
+                captured, frame = cap.read()
+                if captured:
+                    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+                    ctr += 1
+                else:
+                    break
             except:
                 break
 
@@ -65,6 +68,8 @@ class VideoTracker():
                             temp = w
                             w = l
                             l = temp
+                        length.append(l)
+                        width.append(w)
                     else:
                         bounds = Bounds(cx, cy)
                 else:
@@ -73,13 +78,16 @@ class VideoTracker():
                 cv2.rectangle(frame, (bounds.x, bounds.y), (bounds.x + bounds.w, bounds.y + bounds.h), (255, 255, 0), 2)
             cv2.imshow("Capture", frame)
             cv2.waitKey(1)
-        properties = {"centroid": centroid, "bounds": bounds, "size": (length, width)}
+
+        l = np.int0(np.average(length))
+        w = np.int0(np.average(width))
+        properties = {"centroid": centroid, "bounds": bounds, "size": (l, w)}
         p = open("Data/" + os.path.basename(self.source) + ".p", 'wb')
         pickle.dump(properties, p)
         p.close()
         cap.release()
         cv2.destroyAllWindows()
-        return centroid, bounds, (length, width)
+        return centroid, bounds, (l, w)
 
 
     def distance_between(self, point1, point2):
