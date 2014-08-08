@@ -15,7 +15,7 @@ def predict_from_video(source, steps, prediction_filename):
     if os.path.isfile(source):
         video_tracker = VideoTracker(source)
         world_properties = video_tracker.record_geometry()
-        return predict(world_properties, source, steps, prediction_filename)
+        return predict(world_properties, steps, prediction_filename, source)
     else:
         print >> sys.stderr, source + " could not be found."
         return 2
@@ -76,7 +76,7 @@ def main(argv=None):
         except getopt.error, msg:
             raise Usage(msg)
 
-        video_filename = "Video/hexbug-testing_video.mp4"
+        video_filename = None
         data_filename = None
         steps = 63
         predictions_filename = "prediction.txt"

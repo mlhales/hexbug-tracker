@@ -93,7 +93,7 @@ class VideoTracker():
                     last_orientation = None
             if bounds:
                 cv2.rectangle(frame, (bounds.x, bounds.y), (bounds.x + bounds.w, bounds.y + bounds.h), (255, 255, 0), 2)
-            cv2.imshow("Capture", frame)
+            cv2.imshow("Measure the World", frame)
             cv2.waitKey(1)
 
         l = np.int0(np.average(length))

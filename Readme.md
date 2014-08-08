@@ -122,7 +122,7 @@ objects.
 The second pass will perform the particle filter to determine the best model of the world, and
 perform the predictions. Predictions will be written to a file hexbug-testing_video-predictions.
 
-`$python hexbug_tracker.py --data Data/hexbug-testing_video.p`
+`$python hexbug_tracker.py --data Data/hexbug-testing_video.mp4.p`
 
 Runs the program on the "pickled" data produced when running the program using the --video option.
 It will perform the particle filter to determine the best model of the world, and

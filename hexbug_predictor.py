@@ -25,10 +25,13 @@ class HexbugPredictor():
         """
         self.measurements = world_properties["centroid"]
         size = world_properties["size"]
+        bounds = world_properties["bounds"]
         self.source = source
         if source:
             self.cap = cv2.VideoCapture(source)
-        self.bug = Hexbug(self.measurements[0], size)
+        else:
+            self.cap = None
+        self.bug = Hexbug(self.measurements[0], size, bounds)
 
     def __del__(self):
         if self.cap:
@@ -46,30 +49,39 @@ class HexbugPredictor():
                 if captured:
                     cv2.circle(frame, (pt[0], pt[1]), 2, (0, 0, 255), 1)
 
+            # If the centroid is not found, just predict the next location and proceed
             if pt[0] > 0 and pt[1] > 0:
                 self.bug.sense(pt)
             else:
                 self.bug.sense(self.bug.predict())
 
+            #After the first step, draw the predictions on the frame.
             if ctr > 1:
+                predictions = []
                 clone = self.bug.clone()
                 l = clone.centroid
                 for i in range(63):
                     p = clone.predict()
+                    predictions.append(round_point(p))
                     clone.sense(p)
-                    cv2.line(frame, round_to_tuple(l), round_to_tuple(p), (0, 0, 255), 1)
+                    if self.cap:
+                        cv2.line(frame, round_to_tuple(l), round_to_tuple(p), (0, 0, 255), 1)
                     l = p
 
+            #Draw the actual (future) motion of the hexbug on the frame
             l = self.measurements[ctr]
             for i in range(ctr + 1, min(ctr + 63, len(self.measurements) - 1)):
                 p = self.measurements[i]
                 if p[0] > 0 and p[1] > 0:
-                    cv2.line(frame, round_to_tuple(l), round_to_tuple(p), (255, 0, 0), 1)
+                    if self.cap:
+                        cv2.line(frame, round_to_tuple(l), round_to_tuple(p), (255, 0, 0), 1)
                     l = p
-            cv2.imshow("Training", frame)
-            cv2.waitKey(1)
-            ctr += 1
 
+            # Show the frame
+            if self.cap:
+                cv2.imshow("Predict Hexbug Motion", frame)
+                cv2.waitKey(1)
+            ctr += 1
 
     def predict(self, steps):
         """
