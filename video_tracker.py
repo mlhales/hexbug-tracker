@@ -13,6 +13,7 @@ class VideoTracker():
     VideoTracker uses opencv to read a mp4 video file. It can determine the geometry of the world
     and record the geometry and hexbug positions in a pickled data file.
     """
+
     def __init__(self, source):
         self.source = source
 
@@ -28,10 +29,15 @@ class VideoTracker():
         lower = np.array([hmin, smin, vmin])
         upper = np.array([hmax, smax, vmax])
 
-        centroid = []
         bounds = None
+        last = None
+        last_orientation = None
+
+        centroid = []
         length = []
         width = []
+        speed = []
+        turn = []
         ctr = 0
 
         while True:
@@ -62,8 +68,8 @@ class VideoTracker():
                     cv2.circle(frame, (cx, cy), 2, (255, 0, 0))
                     if bounds:
                         bounds.expand_box(box)
-                        w = self.distance_between(box[0], box[1])
-                        l = self.distance_between(box[1], box[2])
+                        w = distance_between(box[0], box[1])
+                        l = distance_between(box[1], box[2])
                         if w > l:
                             temp = w
                             w = l
@@ -72,8 +78,19 @@ class VideoTracker():
                         width.append(w)
                     else:
                         bounds = Bounds(cx, cy)
+                    if last:
+                        s = distance_between((cx, cy), last)
+                        speed.append(s)
+                        cv2.line(frame, (cx, cy), last, (255, 255, 0), 2)
+                        o = get_orientation(last, (cx, cy))
+                        if last_orientation:
+                            turn.append(o - last_orientation)
+                        last_orientation = o
+                    last = (cx, cy)
                 else:
                     centroid.append([-1, -1])
+                    last = None
+                    last_orientation = None
             if bounds:
                 cv2.rectangle(frame, (bounds.x, bounds.y), (bounds.x + bounds.w, bounds.y + bounds.h), (255, 255, 0), 2)
             cv2.imshow("Capture", frame)
@@ -81,16 +98,20 @@ class VideoTracker():
 
         l = np.int0(np.average(length))
         w = np.int0(np.average(width))
-        properties = {"centroid": centroid, "bounds": bounds, "size": (l, w)}
+        properties = {"centroid": centroid,
+                      "bounds": bounds,
+                      "size": (l, w),
+                      "turn_mu": np.median(turn),
+                      "turn_var": np.var(turn),
+                      "turn_max": max(turn),
+                      "speed_mu": np.median(speed),
+                      "speed_var": np.var(speed),
+                      "speed_max": max(speed)}
         p = open("Data/" + os.path.basename(self.source) + ".p", 'wb')
         pickle.dump(properties, p)
         p.close()
         cap.release()
         cv2.destroyAllWindows()
-        return centroid, bounds, (l, w)
+        return properties
 
 
-    def distance_between(self, point1, point2):
-        x1, y1 = point1
-        x2, y2 = point2
-        return math.sqrt(((x2 - x1) ** 2) + ((y2 - y1) ** 2))

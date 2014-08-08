@@ -18,8 +18,8 @@ def predict_from_video(source, steps, prediction_filename):
     """
     if os.path.isfile(source):
         video_tracker = VideoTracker(source)
-        centroid, bounds, bug_size = video_tracker.record_geometry()
-        return predict(centroid, bounds, bug_size, source, steps, prediction_filename)
+        world_properties = video_tracker.record_geometry()
+        return predict(world_properties, source, steps, prediction_filename)
     else:
         print >> sys.stderr, source + " could not be found."
         return 2
@@ -32,23 +32,20 @@ def predict_from_saved_data(data, steps, prediction_filename, source=None):
     """
     if os.path.isfile(data):
         p = open(data, 'r')
-        d = pickle.load(p)
-        centroid = d["centroid"]
-        bounds = d["bounds"]
-        bug_size = d["size"]
+        world_properties = pickle.load(p)
         p.close()
-        return predict(centroid, bounds, bug_size, steps, prediction_filename, source)
+        return predict(world_properties, steps, prediction_filename, source)
     else:
         print >> sys.stderr, data + " could not be found."
         return 2
 
 
-def predict(centroid, bounds, bug_size, steps, prediction_filename, source=None):
+def predict(world_properties, steps, prediction_filename, source=None):
     """
     Create a HexbugPredictor, train it over the centroid data,
     then predict into the future the specified number of steps.
     """
-    predictor = HexbugPredictor(centroid, bounds, bug_size, source)
+    predictor = HexbugPredictor(world_properties, source)
     predictor.train()
     predictions = predictor.predict(steps)
     write_predictions(predictions, prediction_filename)
