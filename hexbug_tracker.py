@@ -1,12 +1,8 @@
 __author__ = 'mlh'
 
-import os
 import sys
 import getopt
-import cv2
-import numpy as np
-from bounds import *
-import pickle
+
 from video_tracker import *
 from hexbug_predictor import *
 

@@ -1,11 +1,6 @@
 __author__ = 'mlh'
 
-
-import math
 import cv2
-import numpy as np
-from bounds import *
-from filter import *
 from hexbug import *
 
 
@@ -16,6 +11,7 @@ def round_point(point):
 def round_to_tuple(point):
     pt = round_point(point)
     return pt[0], pt[1]
+
 
 class HexbugPredictor():
     """
