@@ -31,6 +31,10 @@ class Hexbug():
         self.bounds = bounds
 
     def clone(self):
+        """
+        Returns a new Hexbug instance with identical properties to self.
+        :return: a Hexbug object
+        """
         bug = Hexbug(self.centroid, self.size, self.bounds)
         bug.speed = self.speed
         bug.theta = self.theta
@@ -40,6 +44,13 @@ class Hexbug():
         return bug
 
     def sense(self, c):
+        """
+        Updates the internal state of the Hexbug based on the passed centroid measurement.
+        If the centroid is different from the current location, apply a low pass filter,
+        and calculate the speed, change in orientation, change in rotation speed and record the
+        actual value passed.
+        :param c: [x, y]
+        """
         if c != self.centroid:
             nfc = [(0.1 * c[0]) + (0.9 * self.filter[0]), (0.1 * c[1]) + (0.9 * self.filter[1])]
             self.speed = math.sqrt((self.filter[0] - nfc[0]) ** 2 + (self.filter[1] - nfc[1]) ** 2)
@@ -61,11 +72,19 @@ class Hexbug():
             self.centroid = c
 
     def predict(self):
+        """
+        If we have enough information to predict, do so, otherwise just return our current position.
+        Predict the new centroid location based on current state, and turn and speed parameters.
+        These ones were determined empirically, but future work could replace these equations
+        with ones based on physics.
+        :return: the predicted centroid [x, y]
+        """
         if self.speed and self.filter_theta:
+
             theta = self.theta + (0.5 * self.dtheta)
             x = self.centroid[0] + (math.cos(theta) * 9.5)
             y = self.centroid[1] + (math.sin(theta) * 9.5)
-
+            # If a collision is predicted, predict the rotation it causes.
             if self.collision_predicted(x, y):
                 clone = self.clone()
                 # recursively turn the bug right until it is facing away from the boundary wall

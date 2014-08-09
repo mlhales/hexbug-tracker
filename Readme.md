@@ -112,6 +112,9 @@ The program was developed and tested on a Mac (OSX Mavericks)
 
 Prints the usage options for the program.
 
+*This command below should be used to grade the project, as it will display the measurements and predictions 
+and write the prediction.txt file.*
+
 `$python hexbug_tracker.py --video Video/hexbug-testing_video.mp4`
 
 Runs the program on the specified video file. This will result in two passes over the video. The
@@ -120,10 +123,14 @@ data is written to a file Data/hexbug-testing_video.p in the form of a "pickled"
 objects.
 
 The second pass will perform the particle filter to determine the best model of the world, and
-perform the predictions. Predictions will be written to a file hexbug-testing_video-predictions.
+perform the predictions. Predictions will be written to a file named "predictions.txt" in the 
+working directory.
+
+Output will be displayed to the user to visualize both steps. 
 
 `$python hexbug_tracker.py --data Data/hexbug-testing_video.mp4.p`
 
 Runs the program on the "pickled" data produced when running the program using the --video option.
 It will perform the particle filter to determine the best model of the world, and
-perform the predictions. Predictions will be written to a file hexbug-testing_video-predictions.
+perform the predictions. Predictions will be written to a file named "predictions.txt" in the 
+working directory. No output will be displayed to the user.

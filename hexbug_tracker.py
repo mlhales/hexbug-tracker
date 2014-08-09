@@ -62,11 +62,17 @@ def write_predictions(predictions, filename="predictions.txt"):
 
 
 class Usage(Exception):
+    """
+    Displays a mesage to the user about program usage.
+    """
     def __init__(self, msg):
         self.msg = msg
 
 
 def main(argv=None):
+    """
+    The main loop of the program. Parse the arguments, and call the appropriate routine.
+    """
     if argv is None:
         argv = sys.argv
     try:
@@ -108,6 +114,10 @@ def main(argv=None):
 
 
 def help_text():
+    """
+    Display help text to the user.
+    """
+
     return """
 
 Usage:
@@ -126,22 +136,24 @@ Data/hexbug-testing_video.p in the form of a "pickled" dictionary of Python
 objects.
 
 The second pass will perform the particle filter to determine the best model of
-the world, and perform the predictions. Predictions will be written to a file
-hexbug-testing_video-predictions.
+the world, and perform the predictions. Predicts 63 time steps into the
+future and saves the predictions in the file
+named "prediction.txt".
 
 $python hexbug_tracker.py --data Data/hexbug-testing_video.p
 
 Runs the program on the "pickled" data produced when running the program using
 the --video option. It will perform the particle filter to determine the best
-model of the world, and perform the predictions. Predictions will be written to
-a file hexbug-testing_video-predictions.
+model of the world, and perform the predictions. Predicts 63 time steps into
+the future and saves the predictions in the file
+named "prediction.txt."
 
 $python hexbug_tracker.py --video Video/hexbug-testing_video.mp4
 --data Data/hexbug-testing_video.p --steps 63 --output prediction.txt
 
 Runs the program on "pickled" data, but displays results overlaid on the video.
 Predicts 63 time steps into the future and saves the predictions in the file
-named prediction.txt."""
+named "prediction.txt"."""
 
 
 if __name__ == "__main__":

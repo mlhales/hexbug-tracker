@@ -18,7 +18,13 @@ class VideoTracker():
         self.source = source
 
 
-    def record_geometry(self, display=True):
+    def record_geometry(self):
+        """
+        Finds the centroid of the hexbug, as well as the size, and the world boundaries.
+        Also records speed, and rotational information to use in modeling the hexbug motion later.
+        Adapted from the original hexbug_tracker.py run provided with the project.
+        :return: properties, a dictionary with the recorded world observations.
+        """
         cap = cv2.VideoCapture(self.source)
         hmin = (238 - 30) / 2
         hmax = (238 + 30) / 2
@@ -56,6 +62,7 @@ class VideoTracker():
             contours, hierarchy = cv2.findContours(thresh, 1, 2)
             if contours:
                 cnt = contours[0]
+                # Find the outer size of the hexbug
                 rect = cv2.minAreaRect(cnt)
                 box = cv2.cv.BoxPoints(rect)
                 box = np.int0(box)
@@ -79,6 +86,7 @@ class VideoTracker():
                     else:
                         bounds = Bounds(cx, cy)
                     if last:
+                        #Record speed and orientation information.
                         s = distance_between((cx, cy), last)
                         speed.append(s)
                         cv2.line(frame, (cx, cy), last, (255, 255, 0), 2)
@@ -98,6 +106,8 @@ class VideoTracker():
 
         l = np.int0(np.average(length))
         w = np.int0(np.average(width))
+
+        #Record the world measurements in a dictionary and "pickle it" in a binary file.
         properties = {"centroid": centroid,
                       "bounds": bounds,
                       "size": (l, w),

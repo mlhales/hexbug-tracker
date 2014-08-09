@@ -5,10 +5,21 @@ from hexbug import *
 
 
 def round_point(point):
+    """
+    Rounds a point (list of two float values) to integers.
+    :param point: [float, float]
+    :return: [int, int]
+    """
     return [int(round(point[0])), int(round(point[1]))]
 
 
 def round_to_tuple(point):
+    """
+    Rounds a point, then returns it as a tuple.
+    This helps with opencv drawing functions.
+    :param point: [float, float]
+    :return: (int, int)
+    """
     pt = round_point(point)
     return pt[0], pt[1]
 
@@ -34,6 +45,9 @@ class HexbugPredictor():
         self.bug = Hexbug(self.measurements[0], size, bounds)
 
     def __del__(self):
+        """
+        Release the opencv capture if we used one.
+        """
         if self.cap:
             self.cap.release()
 
